@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="author" content="David Hromádka" />
+    <title>Tipy, triky a vtipy v C++ - Neslyšný kočkopes</title>
+  <link rel="stylesheet" href="../../css/kockopes.css" type="text/css" />
+  <script src="../../js/snack-sizzle-min.js"></script>
+  <script src="../../js/kockopes.js"></script>
+</head>
+<body>
+<div id="header">
+<div class="container">
+<h1 class="title">Tipy, triky a vtipy v C++</h1>
+<h2 class="author">David Hromádka</h2>
+</div>
+</div>
+<div class="container">
+<p>« <a href="ester-krejci.html">předchozí článek</a> | <a href="index.html">obsah čísla</a> | <a href="myslenky-s-r-o.html">následující článek</a> »</p>
+<hr />
+<p>V této pravidelné rubrice se budete dozvídat o tajuplných zákoutích podivuhodného multiparadigmatického programovacího jazyka C++. Rubrika předpokládá dobrou znalost tohoto jazyka, takže pokud nemáte tušení, za jakých okolností se pole automaticky konvertuje na ukazatel na svůj první prvek, tato rubrika nebude pro vás. Pokud se to chcete dozvědět, mohu doporučit knihu <em>Jazyky C a C++ : kompletní průvodce</em>, jejímž autorem je Miroslav Virius.</p>
+<p>Dnes poodhalíme tajemství polí a jejich rozměrů. V řadě učebnic najdete radu uschovat si rozměr pole do celočíselné konstanty:</p>
+<pre><code>const int pole_rozmer = 4;
+int pole[pole_rozmer] = {1, 2, 3, 4};</code></pre>
+<p>Toto řešení má ale dvě nevýhody. Především si musíte zapamatovat název pomocné konstanty. Větší problém ovšem nastane, když se rozhodnete nechat si rozměr pole odvodit podle počtu inicializátorů:</p>
+<pre><code>int pole[] = {1, 2, 3, 4};</code></pre>
+<p>V tomto případě je totiž uvedené řešení nepoužitelné. První další řešení, které většinu programátorů napadne, je následující použití operátoru <code>sizeof</code>:</p>
+<pre><code>sizeof(pole) / sizeof(int)</code></pre>
+<p>Není to úplně špatná myšlenka, ale má další dva nedostatky. Předně když se rozhodnete změnit typ prvku pole například na <code>double</code>, začne uvedený výraz dávat chybné výsledky. Tento nedostatek lze odstranit drobnou úpravou:</p>
+<pre><code>sizeof(pole) / sizeof*(pole)</code></pre>
+<p>Oba uvedené výrazy jsou ovšem náchylné k chybnému použití. Například:</p>
+<pre><code>int funkce(char pole[20]) // pozor, není pole!
+{
+    return sizeof(pole) / sizeof*(pole);
+}</code></pre>
+<p>Uvedená funkce téměř jistě nevrátí číslo 20, ale spíš 4, nebo 8. Její parametr je totiž navzdory syntaxi ukazatel, ne pole.</p>
+<p>Jednoduché, bezpečné a rozšiřitelné řešení nabízejí šablony:</p>
+<pre><code>template&lt;typename T, size_t SZ&gt;
+struct pole_type {
+    typedef T type[SZ];
+};
+
+template&lt;typename T, size_t SZ&gt;
+typename pole_type&lt;char, SZ&gt;::type &amp;arraydim(
+T (&amp;)[SZ]) throw ();</code></pre>
+<p>Funkce arraydim() transformuje libovolné pole na referenci na pole znaků o stejné dimenzi. A protože podle standardu <code>sizeof(char) == 1</code>, můžeme nyní dimenzi pole zjistit výrazem:</p>
+<pre><code>sizeof arraydim(pole)</code></pre>
+<p>Mechanismus šablon zajišťuje statickou typovou kontrolu a přetížením funkce arraydim() můžeme její funkcionalitu rozšířit o podporu dalších typů, například bitových sad:</p>
+<pre><code>template&lt;size_t SZ&gt;
+typename pole_type&lt;char, SZ&gt;::type &amp;arraydim(
+    const std::bitset&lt;SZ&gt; &amp;) throw ();</code></pre>
+<p>Protože funkci arraydim() budeme používat jen uvnitř operátoru <code>sizeof</code>, nemusíme definovat její tělo, což ušetří práci kompilátoru, protože ji nebude muset kompilovat. Konstrukci <code>sizeof arraydim</code> pak můžeme zabalit do makra preprocesoru, ale to už nechám na vás.</p>
+<p>A malý vtip na závěr:</p>
+<pre><code>for (size_t i = 8; i &gt;= 0; --i)
+    printf("Shall I end? Nevermore!\n");</code></pre>
+<hr />
+<p>« <a href="ester-krejci.html">předchozí článek</a> | <a href="index.html">obsah čísla</a> | <a href="myslenky-s-r-o.html">následující článek</a> »</p></div>
+    <hr/>
+    <div id="disqus_thread" class="container"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'kockopes'; // required: replace example with your forum shortname
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52659810-1', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
