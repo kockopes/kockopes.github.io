@@ -460,6 +460,10 @@ p + p { text-indent:1.625em;}
 #header h3 { color: white; }
 
 #header .author { font-family: "lucida grande","lucida sans unicode", sans-serif; font-size: 110%; }
+#header .menu { font-size: small; }
+#header .menu a { color: white; }
+
+.right { float: right; }
 
 .author { font-variant: small-caps; }
 
@@ -468,6 +472,8 @@ html { background-color: #fdf6e3; color: #657b83; }
 a, a:active, a:visited { color: #268bd2; }
 a { text-decoration:none; }
 a:hover { text-decoration: underline; }
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { color: black; }
 
 hr { margin-bottom:1.625em; border: 1px dashed #333;}
 
