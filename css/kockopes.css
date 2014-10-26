@@ -473,7 +473,7 @@ a, a:active, a:visited { color: #268bd2; }
 a { text-decoration:none; }
 a:hover { text-decoration: underline; }
 
-h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { color: black; }
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { text-decoration: underline; }
 
 hr { margin-bottom:1.625em; border: 1px dashed #333;}
 
